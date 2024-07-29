@@ -6,3 +6,7 @@ edition = "2021"
 [dependencies]
 
 [dev-dependencies]
+
+[lints.clippy]
+nursery = { level = "warn" }
+pedantic = { level = "warn" }
