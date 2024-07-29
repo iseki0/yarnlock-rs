@@ -61,10 +61,10 @@ struct Parser<'t> {
 ///
 /// Translated from [https://github.com/yarnpkg/yarn/blob/master/src/lockfile/parse.js#L50](https://github.com/yarnpkg/yarn/blob/7cafa512a777048ce0b666080a24e80aae3d66a9/src/lockfile/parse.js#L50)
 /// Keep code-style consistent with the original code.
-/// 
+///
 /// # Errors
 /// - [`Error`]: When parsing failed
-/// 
+///
 pub fn parse(input: &[u8]) -> Result<Value, Error> {
     let tokens = &tokenize(input).map_err(|e| Error { line: e.line, col: e.col, reason: e.reason })?;
     let mut parser = Parser {
@@ -220,17 +220,20 @@ impl<'t> Parser<'t> {
 
 
 const fn unexpected_token_string(token: &Token) -> &'static str {
+    macro_rules! u {
+        ($s: expr) => {concat!("Unexpected token ", $s)};
+    }
     match token {
-        Token::Bool(_) => "Unexpected token Bool",
-        Token::String(_) => "Unexpected token String",
-        Token::Number(_) => "Unexpected token Number",
-        Token::Indent(_) => "Unexpected token Indent",
-        Token::Comment(_) => "Unexpected token Comment",
-        Token::Eof => "Unexpected token EOF",
-        Token::Colon => "Unexpected token Colon",
-        Token::NewLine => "Unexpected token NewLine",
-        Token::Invalid => "Unexpected token Invalid",
-        Token::Comma => "Unexpected token Comma",
+        Token::Bool(_) => u!("Bool"),
+        Token::String(_) => u!("String"),
+        Token::Number(_) => u!("Number"),
+        Token::Indent(_) => u!("Indent"),
+        Token::Comment(_) => u!("Comment"),
+        Token::Eof => u!("Eof"),
+        Token::Colon => u!("Colon"),
+        Token::NewLine => u!("NewLine"),
+        Token::Invalid => u!("Invalid"),
+        Token::Comma => u!("Comma"),
     }
 }
 
@@ -393,11 +396,25 @@ mod tests {
             foo()?;
             Ok(())
         }
-        
+
         let pe = Error { line: 1, col: 1, reason: "test" };
         let ee: Box<dyn std::error::Error> = Box::new(pe);
         println!("{ee}");
-        
+
         println!("{:?}", bar());
+    }
+    
+    #[test]
+    fn test_unexpected_token_string(){
+        assert_eq!(unexpected_token_string(&Token::Bool(true)), "Unexpected token Bool");
+        assert_eq!(unexpected_token_string(&Token::String(&[])), "Unexpected token String");
+        assert_eq!(unexpected_token_string(&Token::Number(0.0)), "Unexpected token Number");
+        assert_eq!(unexpected_token_string(&Token::Indent(0)), "Unexpected token Indent");
+        assert_eq!(unexpected_token_string(&Token::Comment(&[])), "Unexpected token Comment");
+        assert_eq!(unexpected_token_string(&Token::Eof), "Unexpected token Eof");
+        assert_eq!(unexpected_token_string(&Token::Colon), "Unexpected token Colon");
+        assert_eq!(unexpected_token_string(&Token::NewLine), "Unexpected token NewLine");
+        assert_eq!(unexpected_token_string(&Token::Invalid), "Unexpected token Invalid");
+        assert_eq!(unexpected_token_string(&Token::Comma), "Unexpected token Comma");
     }
 }
