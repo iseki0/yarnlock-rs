@@ -41,6 +41,7 @@ fn measure_unquoted_string(input: &[u8]) -> usize {
 ///
 /// Translated from [https://github.com/yarnpkg/yarn/blob/master/src/lockfile/parse.js#L50](https://github.com/yarnpkg/yarn/blob/7cafa512a777048ce0b666080a24e80aae3d66a9/src/lockfile/parse.js#L50)
 #[allow(clippy::cast_precision_loss)]
+#[allow(clippy::too_many_lines)]
 pub fn tokenize(input: &[u8]) -> Result<Vec<TokenWrapper>, Error> {
     let mut input = input;
     let mut line = 1;

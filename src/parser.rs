@@ -100,6 +100,7 @@ impl<'t> Parser<'t> {
         }
     }
 
+    #[allow(clippy::too_many_lines)]
     fn parse(&mut self, indent: usize) -> Result<Value, Error> {
         let mut map: HashMap<String, Value> = HashMap::new();
         macro_rules! unquote_string_token {
