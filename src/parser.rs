@@ -157,23 +157,17 @@ impl<'t> Parser<'t> {
                     let mut keys = vec![key];
                     _ = self.next()?;
                     // support multiple keys
-                    loop {
-                        match self.cur.token {
-                            Token::Comma => {
-                                // skip comma
-                                _ = self.next();
-                                let key_token = self.cur;
-                                match key_token.token {
-                                    Token::String(s) => {
-                                        let key = unquote_string_token!(key_token, s)?;
-                                        key_check!(key_token, key);
-                                        keys.push(key);
-                                        _ = self.next()?;
-                                    }
-                                    _ => { return Err(Error { line: key_token.line, col: key_token.col, reason: "Expected string" }) }
-                                };
+                    while self.cur.token == Token::Comma {
+                        _ = self.next();
+                        let key_token = self.cur;
+                        match key_token.token {
+                            Token::String(s) => {
+                                let key = unquote_string_token!(key_token, s)?;
+                                key_check!(key_token, key);
+                                keys.push(key);
+                                _ = self.next()?;
                             }
-                            _ => { break; }
+                            _ => { return Err(Error { line: key_token.line, col: key_token.col, reason: "Expected string" }) }
                         };
                     };
                     let was_colon = matches!(self.cur.token, Token::Colon);
